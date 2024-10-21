@@ -43,9 +43,18 @@ principles, managed by Terraform. The EC2 instance uses the Amazon Linux 2 AMI a
    terraform destroy
    ```
 
+## Updates
+
+- Added VPC with CIDR block `10.0.0.0/16`.
+- Created a public subnet in the VPC with CIDR block `10.0.1.0/24`.
+- Provisioned an Internet Gateway and a Route Table for the VPC.
+- Launched an EC2 instance in the public subnet with automatic public IP assignment.
+
 ## Future Enhancements
-- Add support for additional AWS services (e.g., S3 buckets, RDS databases).
-- Implement automated deployment using a CI/CD pipeline.
+- Add private subnets with restricted access.
+- Implement security groups and network ACLs for better security.
+- Automate deployment using a CI/CD pipeline.
+
 
 ## Author
 - [Rohit Manna](https://github.com/RohitManna11)
