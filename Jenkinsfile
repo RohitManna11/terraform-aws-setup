@@ -35,7 +35,9 @@ pipeline {
 
     post {
         always {
-            cleanWs()  // Clean the workspace after the build
+            node {
+                cleanWs()  // Ensure this is within a node block
+            }
         }
     }
 }
