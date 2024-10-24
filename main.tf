@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_key_pair" "example" {
   key_name   = "my-key"
-  public_key = file("/home/rohit/.ssh/id_rsa.pub")  # Path to your public key
+  public_key = file("/var/lib/jenkins/.ssh/id_rsa.pub")  # Path to your public key
 }
 
 # Create a VPC
