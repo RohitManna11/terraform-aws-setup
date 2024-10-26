@@ -27,7 +27,6 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                input message: 'Do you want to apply these changes?', ok: 'Apply'
                 sh 'terraform apply -input=false tfplan'
             }
         }
