@@ -1,3 +1,4 @@
+#CICD SUCCESS PENCHO
 # Terraform AWS EC2 Setup
 This project contains a basic Terraform configuration for provisioning an AWS EC2 instance. 
 The purpose of this setup is to automate the creation of an EC2 instance using Infrastructure as Code (IaC) 
