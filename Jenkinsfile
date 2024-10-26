@@ -34,9 +34,7 @@ pipeline {
 
     post {
         always {
-            node {  // Wrap cleanWs in node block to provide workspace context
-                cleanWs()
-            }
+            echo "Build Completed. Clean-up or other steps can be added"
         }
     }
 }
