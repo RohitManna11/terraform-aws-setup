@@ -34,9 +34,9 @@ pipeline {
 
     post {
         always {
-            node {
+           
                 cleanWs()  // Ensure this is within a node block
-            }
+            
         }
     }
 }
