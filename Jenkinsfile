@@ -54,6 +54,12 @@ pipeline {
         }
     }
 
+	stage('Destroy Terraform'){
+		steps {
+			sh 'terraform destroy -auto-approve'
+}
+}
+
 	stage('Deploy Python App') {
 	    steps {
 		// Copy files to the EC2 instance (use ssh/scp)
