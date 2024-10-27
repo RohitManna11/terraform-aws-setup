@@ -43,7 +43,7 @@ pipeline {
 		    def publicIp = sh(script: "aws ec2 describe-instances --instance-ids ${INSTANCE_ID} --region ${REGION} --query 'Reservations[0].Instances[0].PublicIpAddress' --output text", returnStdout: true).trim()
                     env.EC2_PUBLIC_IP = publicIp
 		}
-		echo "EC2 Instance ID: " ${env.INSTANCE_ID}
+		echo "EC2 Instance ID: ${env.INSTANCE_ID}"
 		echo "EC2 Public IP: ${env.EC2_PUBLIC_IP}"
 	    }
 	}
