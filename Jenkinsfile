@@ -14,12 +14,6 @@ pipeline {
             }
         }
 
-	stage('Terraform Destroy'){
-	    steps {
-	        sh 'terraform destroy -auto-approve'
-	    }
-	}
-
         stage('Terraform Init') {
             steps {
                 sh 'terraform init'
@@ -59,6 +53,12 @@ pipeline {
             echo "EC2 Public IP: ${env.EC2_PUBLIC_IP}"
         }
     }
+
+	stage ('Destroy Terraform') {
+	    steps {
+		sh 'terraform destroy -auto-approve'
+	    }
+	}
 
 	stage('Deploy Python App') {
 	    steps {
