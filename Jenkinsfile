@@ -58,7 +58,7 @@ pipeline {
 	    steps {
 		// Copy files to the EC2 instance (use ssh/scp)
                 sh '''
-                scp -i /home/rohit/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r simple-python-app ec2-user@<EC2_PUBLIC_IP>:/home/ec2-user/
+                scp -i /home/rohit/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r simple-python-app ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user/
                 ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${EC2_PUBLIC_IP} "pip3 install -r /home/ec2-user/simple-python-app/requirements.txt"
                 ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${EC2_PUBLIC_IP} "nohup python3 /home/ec2-user/simple-python-app/app.py &"
                 '''	    

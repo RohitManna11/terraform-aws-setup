@@ -77,3 +77,7 @@ resource "aws_instance" "example" {
     Name = "TerraformExampleInstance"
   }
 }
+
+output "instance_id" {
+    value = aws_instance.example.id
+}
