@@ -65,6 +65,14 @@ resource "aws_instance" "example" {
   subnet_id                   = aws_subnet.public_subnet.id  # Launch in the public subnet
   associate_public_ip_address = true  # Ensure it has a public IP
   key_name                    = aws_key_pair.example.key_name
+  
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt update -y
+    sudo apt install -y python3 python3-pip
+    pip3 install flask
+  EOF
+
   tags = {
     Name = "TerraformExampleInstance"
   }
