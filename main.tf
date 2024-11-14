@@ -4,7 +4,9 @@ provider "aws" {
 
 resource "aws_key_pair" "example" {
   key_name   = "my-key"
-  public_key = file("/home/rohit/.ssh/id_rsa.pub")  # Path to your public key
+  public_key = <<EOF
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDUrXIwLVheKQgGcMY8ElkA1lP2I9acPQ/PouOXLReb1sZtACy4JJSvAhkAI/zq+Ibz+JSUIBPfpQ7sb6gMbIOY3vfEiPyWBMvqmkvUoz+hJt8UwH62MVByhFz+47VERjcaVNC4Sicr4pyAmdcy0YrHX6/B3rQAjRhckVoxZP6J+7IajTHGZFGvkUeD17AtItgHV6/92OHzZObBC+gpCddzT+BV6VO4Z+Vvb2E1j780YsgKH5eLf3HNNT5Q9QIH4dDH916FoUPcAfRv6oOlOWWc6k8G8i94aQwiYKXW1seCRVoAD5k08qV6MSP8An3weAJmPT74UXouSqiVMV2/JVdn+cCV94+UukOIYpljy223Uz+0Jb7fG46suZoyetzaVVDT028ObF/UFXOqHnLuDXYohrg/Ub0Go93L9y0SGgOe51vDu0ieD0Ztjy/iyzDgulYWEoUUmJgweZJZLz77uYzGavDgT9nCqP30NMAsvOmr3h+jYDHelb91Pd3mxLh7lKXmlm3iNacZYgCqalx2Pdy4kp7TC2Tft7iSAioOmS8D1DBjoJfO/Ih91LQvUT1/O/FEtK9Lug3DRxDB94OyHNdmjYlxmjRtTI+UJMDdbDMf+78XD1RZcTl3qOG2dfir7YDqi9GPqvG4edCvF2Cp5DXs2RLrOLrMYeIyvwrXEsEGbw== rkresearchwork11@gmail.com
+EOF
 }
 
 # Create a VPC
