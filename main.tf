@@ -4,7 +4,7 @@ provider "aws" {
 
 resource "aws_key_pair" "example" {
   key_name   = "my-key"
-  public_key = file("~/.ssh/id_rsa.pub")  # Path to your public key
+  public_key = file("/home/rohit/.ssh/id_rsa.pub")  # Path to your public key
 }
 
 # Create a VPC
@@ -76,8 +76,21 @@ resource "aws_instance" "example" {
   tags = {
     Name = "TerraformExampleInstance"
   }
+
+provisioner "remote-exec" {
+    inline = [
+      "mkdir /home/ec2-user/python-app",
+      "scp -i /home/rohit/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r python-app ec2-user@${self.public_ip}:/home/ec2-user/python-app",
+      "ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${self.public_ip} 'pip3 install -r /home/ec2-user/python-app/requirements.txt'",
+      "ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${self.public_ip} 'nohup python3 /home/ec2-user/python-app/app.py &'"
+    ]
+  }
 }
 
 output "instance_id" {
     value = aws_instance.example.id
+}
+
+output "instance_public_ip" {
+  value = aws_instance.example.public_ip
 }
