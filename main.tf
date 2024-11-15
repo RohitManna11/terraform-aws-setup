@@ -80,6 +80,13 @@ resource "aws_instance" "example" {
   }
 
 provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = self.public_ip
+      user        = "ec2-user" # Default user for Amazon Linux
+      private_key = file("/var/lib/jenkins/.ssh/my-ec2-key.pem") # Path to private key
+    }
+
     inline = [
       "mkdir /home/ec2-user/python-app",
       "scp -i /home/rohit/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r python-app ec2-user@${self.public_ip}:/home/ec2-user/python-app",
