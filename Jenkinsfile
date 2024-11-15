@@ -63,9 +63,9 @@ pipeline {
 	stage('Deploy Python App') {
 	steps {
 		sh '''
-		scp -i /var/lib/jenkins/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r python-app ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user/
-		ssh -i /var/lib/jenkins/.ssh/my-ec2-key.pem ec2-user@${EC2_PUBLIC_IP} "pip3 install -r /home/ec2-user/python-app/requirements.txt"
-		ssh -i /var/lib/jenkins/.ssh/my-ec2-key.pem ec2-user@${EC2_PUBLIC_IP} "nohup python3 /home/ec2-user/python-app/app.py &"
+		scp -i /var/lib/jenkins/.ssh/id_rsa -o StrictHostKeyChecking=no -r python-app ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user/
+		ssh -i /var/lib/jenkins/.ssh/id_rsa ec2-user@${EC2_PUBLIC_IP} "pip3 install -r /home/ec2-user/python-app/requirements.txt"
+		ssh -i /var/lib/jenkins/.ssh/id_rsa ec2-user@${EC2_PUBLIC_IP} "nohup python3 /home/ec2-user/python-app/app.py &"
 		'''
 	    }
 	}
