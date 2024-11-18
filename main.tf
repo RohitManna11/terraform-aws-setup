@@ -4,9 +4,7 @@ provider "aws" {
 
 resource "aws_key_pair" "example" {
   key_name   = "my-key"
-  public_key = <<EOF
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDUrXIwLVheKQgGcMY8ElkA1lP2I9acPQ/PouOXLReb1sZtACy4JJSvAhkAI/zq+Ibz+JSUIBPfpQ7sb6gMbIOY3vfEiPyWBMvqmkvUoz+hJt8UwH62MVByhFz+47VERjcaVNC4Sicr4pyAmdcy0YrHX6/B3rQAjRhckVoxZP6J+7IajTHGZFGvkUeD17AtItgHV6/92OHzZObBC+gpCddzT+BV6VO4Z+Vvb2E1j780YsgKH5eLf3HNNT5Q9QIH4dDH916FoUPcAfRv6oOlOWWc6k8G8i94aQwiYKXW1seCRVoAD5k08qV6MSP8An3weAJmPT74UXouSqiVMV2/JVdn+cCV94+UukOIYpljy223Uz+0Jb7fG46suZoyetzaVVDT028ObF/UFXOqHnLuDXYohrg/Ub0Go93L9y0SGgOe51vDu0ieD0Ztjy/iyzDgulYWEoUUmJgweZJZLz77uYzGavDgT9nCqP30NMAsvOmr3h+jYDHelb91Pd3mxLh7lKXmlm3iNacZYgCqalx2Pdy4kp7TC2Tft7iSAioOmS8D1DBjoJfO/Ih91LQvUT1/O/FEtK9Lug3DRxDB94OyHNdmjYlxmjRtTI+UJMDdbDMf+78XD1RZcTl3qOG2dfir7YDqi9GPqvG4edCvF2Cp5DXs2RLrOLrMYeIyvwrXEsEGbw== rkresearchwork11@gmail.com
-EOF
+  public_key = file("/home/rohit/.ssh/my-key.pub")
 }
 
 # Create a VPC
@@ -60,6 +58,40 @@ resource "aws_route_table_association" "public_route_assoc" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
+# Create a Security Group
+resource "aws_security_group" "example_sg" {
+  name        = "example-security-group"
+  vpc_id      = aws_vpc.main_vpc.id
+  description = "Allow SSH and HTTP traffic"
+
+  ingress {
+    description = "Allow SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # Allow SSH from any IP (adjust for stricter security)
+  }
+
+  ingress {
+    description      = "Allow HTTP"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "ExampleSG"
+  }
+}
+
 # Update EC2 Instance to Launch in the New VPC
 resource "aws_instance" "example" {
   ami                         = "ami-0c94855ba95c71c99"
@@ -67,32 +99,27 @@ resource "aws_instance" "example" {
   subnet_id                   = aws_subnet.public_subnet.id  # Launch in the public subnet
   associate_public_ip_address = true  # Ensure it has a public IP
   key_name                    = aws_key_pair.example.key_name
+  vpc_security_group_ids      = [aws_security_group.example_sg.id]
   
   user_data = <<-EOF
     #!/bin/bash
-    sudo apt update -y
-    sudo apt install -y python3 python3-pip
-    pip3 install flask
+    sudo yum update -y
+    sudo yum install -y python3 python3-pip git
+    
+    # Clone the repository containing the Python app
+    cd /home/ec2-user
+    git clone https://github.com/RohitManna11/terraform-aws-setup.git
+    cd terraform-aws-setup/python-app
+
+    # Install Python dependencies
+    pip3 install -r requirements.txt
+
+    # Run the Python application
+    nohup python3 app.py > app.log 2>&1 &
   EOF
 
   tags = {
     Name = "TerraformExampleInstance"
-  }
-
-provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      host        = self.public_ip
-      user        = "ec2-user" # Default user for Amazon Linux
-      private_key = file("/var/lib/jenkins/.ssh/my-ec2-key.pem") # Path to private key
-    }
-
-    inline = [
-      "mkdir /home/ec2-user/python-app",
-      "scp -i /home/rohit/.ssh/my-ec2-key.pem -o StrictHostKeyChecking=no -r python-app ec2-user@${self.public_ip}:/home/ec2-user/python-app",
-      "ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${self.public_ip} 'pip3 install -r /home/ec2-user/python-app/requirements.txt'",
-      "ssh -i /home/rohit/.ssh/my-ec2-key.pem ec2-user@${self.public_ip} 'nohup python3 /home/ec2-user/python-app/app.py &'"
-    ]
   }
 }
 
