@@ -67,16 +67,35 @@ pipeline {
 //}
 //}
 	stage('Deploy Python App') {
-	steps {
-		sh '''
-		ssh-keyscan -H ${EC2_PUBLIC_IP} >> ~/.ssh/known_hosts
-		ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "echo 'SSH connection successful'"
-		scp -i /var/lib/jenkins/.ssh/my-key -o StrictHostKeyChecking=no -r python-app ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user/
-		ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "pip3 install -r /home/ec2-user/python-app/requirements.txt"
-		ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "nohup python3 /home/ec2-user/python-app/app.py &"
-		'''
-	    }
-	}
+    steps {
+        script {
+            // Ensure the SSH connection
+            sh '''
+                ssh-keyscan -H ${EC2_PUBLIC_IP} >> /var/lib/jenkins/.ssh/known_hosts
+                ssh -o StrictHostKeyChecking=no -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} echo 'SSH connection successful'
+            '''
+
+            // Verify Python and Pip installation
+            sh '''
+                ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "python3 --version || sudo yum install -y python3"
+                ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "pip3 --version || sudo yum install -y python3-pip"
+            '''
+
+            // Deploy the application and start the Flask server
+            sh '''
+                scp -i /var/lib/jenkins/.ssh/my-key -o StrictHostKeyChecking=no -r python-app ec2-user@${EC2_PUBLIC_IP}:/home/ec2-user/
+                ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "pip3 install -r /home/ec2-user/python-app/requirements.txt"
+                ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "nohup python3 /home/ec2-user/python-app/app.py > /home/ec2-user/app.log 2>&1 &"
+            '''
+
+            // Verify the Flask server is running
+            sh '''
+                ssh -i /var/lib/jenkins/.ssh/my-key ec2-user@${EC2_PUBLIC_IP} "curl -s http://localhost:80 || echo 'Flask server failed to start'"
+            '''
+        }
+    }
+}
+
 
     }
 
