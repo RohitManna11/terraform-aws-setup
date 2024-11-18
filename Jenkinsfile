@@ -61,11 +61,6 @@ pipeline {
         }
     }
 
-//	stage('Destroy Terraform'){
-//		steps {
-//			sh 'terraform destroy -auto-approve'
-//}
-//}
 	stage('Deploy Python App') {
     steps {
         script {
